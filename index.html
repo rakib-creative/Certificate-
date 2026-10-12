@@ -1,0 +1,829 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sanad Certificate Maker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=DM+Serif+Display&family=Dancing+Script:wght@600&family=Fredoka:wght@500;600;700&family=Great+Vibes&family=IBM+Plex+Mono:wght@400;500&family=Josefin+Sans:wght@300;400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@400;700&family=Montserrat:wght@500;600;700&family=Nunito:wght@400;600;700&family=Oswald:wght@400;600&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Poppins:wght@400;500;600;700&family=Raleway:wght@300;400;500;700&display=swap">
+<style>
+/* Layout: soft dotted desk, rounded sticker-style cards, preview taped onto a mat */
+:root{
+  --bg:#f4f1ff;--dot:#ddd5fb;--surf:#ffffff;--fg:#2a2146;--mut:#6b648f;--line:#e3ddfa;
+  --acc:#d92d68;--accfg:#ffffff;--accsh:#a81f4d;--acc2:#0f9d82;--acc2fg:#ffffff;--acc2sh:#0a705d;
+  --pink:#ffd6e4;--mint:#c9f3e6;--butter:#ffe9a8;--sky:#d0e7ff;--lav:#e4dcff;--tape:rgba(255,205,92,.78);
+  --shadow:0 2px 0 rgba(42,33,70,.05),0 16px 32px rgba(74,52,160,.12);
+  --fh:'Fredoka','Nunito','Segoe UI',system-ui,sans-serif;
+  --fbody:'Nunito','Segoe UI',system-ui,sans-serif;
+  --fmono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#191431;--dot:#2a2352;--surf:#241d45;--fg:#f4f0ff;--mut:#b2a9d8;--line:#3a3168;
+  --acc:#ff7aa2;--accfg:#2d0a1a;--accsh:#c24a72;--acc2:#4fe0bf;--acc2fg:#062a22;--acc2sh:#2aa88b;
+  --pink:#4a2340;--mint:#1d4a46;--butter:#4d4326;--sky:#1f3a5e;--lav:#3a2f6b;--tape:rgba(255,205,92,.4);
+  --shadow:0 2px 0 rgba(0,0,0,.25),0 16px 32px rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#191431;--dot:#2a2352;--surf:#241d45;--fg:#f4f0ff;--mut:#b2a9d8;--line:#3a3168;
+  --acc:#ff7aa2;--accfg:#2d0a1a;--accsh:#c24a72;--acc2:#4fe0bf;--acc2fg:#062a22;--acc2sh:#2aa88b;
+  --pink:#4a2340;--mint:#1d4a46;--butter:#4d4326;--sky:#1f3a5e;--lav:#3a2f6b;--tape:rgba(255,205,92,.4);
+  --shadow:0 2px 0 rgba(0,0,0,.25),0 16px 32px rgba(0,0,0,.35);color-scheme:dark}
+*{box-sizing:border-box}
+body{background-color:var(--bg);background-image:radial-gradient(var(--dot) 1.3px,transparent 1.4px);background-size:24px 24px;color:var(--fg);font:16px/1.55 var(--fbody);padding-inline:16px;padding-block:24px 56px}
+.wrap{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+
+/* header */
+.hero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px 28px;flex-wrap:wrap;padding:6px 4px}
+.brand{display:flex;align-items:center;gap:16px;min-width:0}
+.logo{flex:0 0 auto;width:64px;height:64px;transform:rotate(-6deg);filter:drop-shadow(0 4px 0 rgba(42,33,70,.12))}
+.hero h1{font:700 34px/1.05 var(--fh);margin:0;letter-spacing:-.005em}
+.hero p{margin:6px 0 0;color:var(--mut);max-width:56ch}
+.steps{display:flex;gap:10px;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+.steps li{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;border-radius:999px;font:600 14px var(--fh);color:var(--fg);box-shadow:0 3px 0 rgba(42,33,70,.1)}
+.steps b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--surf);font:700 13px var(--fh)}
+.steps .s1{background:var(--pink)}.steps .s2{background:var(--butter)}.steps .s3{background:var(--mint)}
+.spark{position:absolute;pointer-events:none;fill:var(--acc);opacity:.9}
+.spark.a{width:18px;height:18px;left:-6px;top:-8px}
+.spark.b{width:12px;height:12px;left:84px;top:62px;fill:var(--acc2)}
+.spark.c{width:14px;height:14px;right:6px;top:-10px;fill:#e8b200}
+
+/* layout */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px;align-items:start}
+.col{display:flex;flex-direction:column;gap:24px;min-width:0}
+.sticky{position:sticky;top:16px}
+.card{background:var(--surf);border:2px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow);min-width:0}
+.card h2{font:600 21px/1.2 var(--fh);margin:0 0 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.card h2 .hl{display:flex;align-items:center;gap:10px;min-width:0}
+.card h2 small{font:600 13px var(--fbody);color:var(--mut);background:var(--bg);padding:3px 10px;border-radius:999px}
+.num{display:grid;place-items:center;flex:0 0 auto;width:32px;height:32px;border-radius:50%;font:700 16px var(--fh);color:var(--fg);box-shadow:0 3px 0 rgba(42,33,70,.12)}
+.num.n1{background:var(--pink)}.num.n2{background:var(--butter)}.num.n3{background:var(--mint)}
+
+/* form */
+fieldset{border:0;margin:0 0 20px;padding:0;min-width:0}
+fieldset:last-child{margin-bottom:0}
+legend{font:700 12px var(--fbody);letter-spacing:.09em;text-transform:uppercase;color:var(--fg);padding:4px 12px;margin-bottom:12px;border-radius:999px;background:var(--lav)}
+form fieldset:nth-of-type(1) legend{background:var(--pink)}
+form fieldset:nth-of-type(2) legend{background:var(--butter)}
+form fieldset:nth-of-type(3) legend{background:var(--mint)}
+form fieldset:nth-of-type(4) legend{background:var(--sky)}
+form fieldset:nth-of-type(5) legend{background:var(--pink)}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0;margin-bottom:12px}
+.f label{font-size:13px;font-weight:700;color:var(--fg)}
+input,select,textarea,button{font:inherit;color:inherit}
+input,select,textarea{width:100%;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:9px 13px;min-width:0}
+input::placeholder,textarea::placeholder{color:var(--mut);opacity:.75}
+textarea{resize:vertical;min-height:80px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:0;border-color:var(--acc);box-shadow:0 0 0 4px var(--pink)}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.numrow{display:flex;gap:10px}
+.numrow input{font-family:var(--fmono);letter-spacing:.05em;font-weight:500}
+.hint{font-size:13px;color:var(--mut);margin:4px 0 0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--surf);border:2px solid var(--line);border-radius:999px;padding:8px 18px;cursor:pointer;font-weight:700;white-space:nowrap;box-shadow:0 3px 0 var(--line);position:relative;top:0}
+.btn:hover{border-color:var(--mut)}
+.btn:active{top:3px;box-shadow:0 0 0 var(--line)}
+.btn.pri{background:var(--acc);color:var(--accfg);border-color:var(--accsh);box-shadow:0 4px 0 var(--accsh)}
+.btn.pri2{background:var(--acc2);color:var(--acc2fg);border-color:var(--acc2sh);box-shadow:0 4px 0 var(--acc2sh)}
+.btn.pri:hover,.btn.pri2:hover{filter:brightness(1.06)}
+.btn.pri:active,.btn.pri2:active{top:4px;box-shadow:0 0 0 transparent}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.pri[disabled]{cursor:progress}
+.btn svg{width:18px;height:18px;flex:0 0 auto}
+h2 .btn{padding:5px 14px;font-size:13px}
+
+/* gallery */
+.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.th{border:3px solid var(--line);border-radius:14px;padding:0;background:var(--bg);cursor:pointer;overflow:hidden;position:relative;aspect-ratio:1123/794;display:block}
+.th:hover{border-color:var(--mut)}
+.th[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 4px var(--pink)}
+.th[aria-pressed="true"]:after{content:"\2713";position:absolute;left:6px;top:6px;width:24px;height:24px;border-radius:50%;background:var(--acc);color:var(--accfg);font:700 14px/24px var(--fbody);text-align:center}
+.th .cert{position:absolute;left:0;top:0;transform-origin:0 0;pointer-events:none}
+.th b{position:absolute;right:6px;bottom:6px;background:var(--fg);color:var(--bg);font:500 10px var(--fmono);padding:1px 7px;border-radius:999px}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.pager span{font-size:13px;color:var(--mut);font-weight:600}
+
+/* preview */
+.mat{position:relative;padding:26px;border-radius:20px;background-color:var(--bg);background-image:radial-gradient(var(--dot) 1.4px,transparent 1.5px);background-size:16px 16px;border:2px dashed var(--line)}
+.mat:before,.mat:after{content:"";position:absolute;width:84px;height:24px;background:var(--tape);z-index:2;border-radius:2px}
+.mat:before{left:6px;top:12px;transform:rotate(-38deg)}
+.mat:after{right:6px;top:12px;transform:rotate(38deg)}
+.stage{position:relative;width:100%;aspect-ratio:1123/794;border-radius:4px;overflow:hidden;box-shadow:0 2px 3px rgba(0,0,0,.2),0 16px 34px rgba(0,0,0,.22);background:#fff}
+.stage .cert{position:absolute;left:0;top:0;transform-origin:0 0}
+.meta{display:flex;justify-content:space-between;gap:8px 12px;margin-top:16px;font-size:13px;color:var(--mut);flex-wrap:wrap}
+.meta span{background:var(--bg);padding:4px 12px;border-radius:999px;font-weight:600}
+.meta code{font-family:var(--fmono);color:var(--fg);font-weight:500}
+.dl{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+.dl .btn{flex:1 1 170px;padding:12px 18px;font-size:16px}
+details{margin-top:18px;border-top:2px dashed var(--line);padding-top:14px}
+summary{cursor:pointer;font-weight:700;font-size:14px}
+pre.qrtxt{margin:12px 0 0;white-space:pre-wrap;word-break:break-word;font:12px/1.6 var(--fmono);background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:12px;max-height:240px;overflow:auto}
+.sitefoot{text-align:center;color:var(--mut);font-size:14px;padding-top:4px}
+#offscreen{position:fixed;left:-12000px;top:0;width:1123px;height:794px;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:11px 20px;border-radius:999px;font-weight:700;font-size:14px;max-width:calc(100vw - 32px);box-shadow:var(--shadow);z-index:9}
+.toast:before{content:"\2605  ";color:#ffc933}
+.toast[hidden]{display:none}
+@media (max-width:900px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .sticky{position:static}
+  .col.right{order:-1}
+  .gal{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero h1{font-size:28px}
+}
+@media (max-width:480px){
+  .row,.filters{grid-template-columns:minmax(0,1fr)}
+  .card{padding:16px;border-radius:20px}
+  .mat{padding:16px}
+  .logo{width:52px;height:52px}
+  .numrow{flex-wrap:wrap}
+  .numrow input{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:no-preference){
+  .btn,.th,input,select,textarea{transition:border-color .15s,box-shadow .15s,transform .15s,top .08s}
+  .th:hover{transform:translateY(-3px) rotate(-.8deg)}
+  .logo{animation:wob 5s ease-in-out infinite}
+  @keyframes wob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(3deg)}}
+}
+
+
+/* ===== Certificate artwork (1123 x 794 px, A4 landscape) ===== */
+.cert{width:1123px;height:794px;position:relative;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.3;text-align:center}
+.cert *{box-sizing:border-box}
+.cert i{position:absolute;display:none}
+.cert .body{position:absolute;left:0;top:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;padding:74px 100px 62px}
+.cert .org{font-weight:600;font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--b);min-height:18px}
+.cert .ttl{font-family:var(--fd);font-size:78px;line-height:1.05;color:var(--a);margin-top:12px}
+.cert .sub{font-size:19px;letter-spacing:.32em;text-transform:uppercase;margin-top:8px;color:var(--ink)}
+.cert .pre{margin-top:0;font-size:17px;font-style:italic;color:var(--soft)}
+.cert .nm{font-family:var(--fn);font-size:64px;line-height:1.15;margin-top:14px;padding:0 44px 6px;border-bottom:2px solid var(--b);max-width:100%;overflow-wrap:anywhere}
+.cert .rs{margin-top:24px;max-width:780px;font-size:19px;line-height:1.5;color:var(--soft);overflow-wrap:anywhere}
+.cert .nt{margin-top:14px;font-size:15px;letter-spacing:.06em;color:var(--b);font-weight:600}
+.cert .mid{flex:1 1 auto;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0 16px}
+.cert .foot{margin-top:auto;width:100%;display:flex;align-items:flex-end;justify-content:space-between;gap:18px}
+.cert .cell{flex:1 1 0;min-width:0;font-size:14px}
+.cert .dt{font-size:17px;font-weight:600;min-height:34px;padding-top:12px}
+.cert .sig{font-family:'Great Vibes',cursive;font-size:36px;line-height:1;min-height:40px;color:var(--ink);overflow-wrap:anywhere}
+.cert .line{border-top:1.5px solid var(--ink);margin-top:6px;padding-top:6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.cert .line em{display:block;font-style:normal;font-size:11px;color:var(--soft);letter-spacing:.1em;margin-top:2px}
+.cert .seal{flex:0 0 104px;width:104px;height:104px;border-radius:50%;background:var(--a);color:var(--bg);display:flex;align-items:center;justify-content:center;position:relative}
+.cert .seal:before{content:"";position:absolute;left:7px;top:7px;right:7px;bottom:7px;border:2px dashed var(--bg);border-radius:50%;opacity:.8}
+.cert .seal span{font:700 30px/1 var(--fb);text-align:center}
+.cert .seal span small{display:block;font:600 12px var(--fb);letter-spacing:.1em;margin-top:3px}
+.cert .qr{flex:0 0 132px;width:132px;display:flex;flex-direction:column;align-items:center}
+.cert .qr img{width:106px;height:106px;background:#fff;padding:5px;border-radius:4px;border:1px solid var(--soft)}
+.cert .qr small{font:500 10.5px 'IBM Plex Mono',monospace;margin-top:5px;color:var(--soft);letter-spacing:.02em;white-space:nowrap}
+.cert .qr small b{display:block;font:600 9px 'IBM Plex Sans',sans-serif;letter-spacing:.14em;margin-bottom:1px}
+
+
+/* seals */
+.cert .sl{flex:0 0 112px;width:112px;height:112px;position:relative;display:flex;align-items:center;justify-content:center}
+.cert .sl svg{position:absolute;left:0;top:0;width:112px;height:112px}
+.cert .sl span{position:relative;font-family:var(--fd);font-weight:700;line-height:1;text-align:center;letter-spacing:.02em}
+.d4 .mid,.d13 .mid{align-items:flex-start}
+/* d1 Classic Double */
+.d1 .f1{display:block;left:26px;top:26px;right:26px;bottom:26px;border:10px double var(--a)}
+.d1 .f2{display:block;left:50px;top:50px;right:50px;bottom:50px;border:1px solid var(--b)}
+.d1 .ttl{font-weight:700}
+/* d2 Corner Frame */
+.d2 .f1{display:block;left:34px;top:34px;right:34px;bottom:34px;border:1px solid var(--b)}
+.d2 .k{display:block;width:78px;height:78px}
+.d2 .k1{left:24px;top:24px;border-left:5px solid var(--a);border-top:5px solid var(--a)}
+.d2 .k2{right:24px;top:24px;border-right:5px solid var(--a);border-top:5px solid var(--a)}
+.d2 .k3{left:24px;bottom:24px;border-left:5px solid var(--a);border-bottom:5px solid var(--a)}
+.d2 .k4{right:24px;bottom:24px;border-right:5px solid var(--a);border-bottom:5px solid var(--a)}
+.d2 .ttl{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:66px}
+.d2 .nm{font-style:italic;font-weight:500}
+/* d3 Heavy Border */
+.d3 .f1{display:block;left:0;top:0;right:0;bottom:0;border:14px solid var(--a)}
+.d3 .f2{display:block;left:30px;top:30px;right:30px;bottom:30px;border:2px solid var(--b)}
+.d3 .ttl{font-weight:700;font-size:70px}
+.d3 .nm{font-weight:700;font-size:52px}
+/* d4 Side Band */
+.d4 .band{display:block;left:0;top:0;bottom:0;width:190px;background:var(--a)}
+.d4 .wm{display:block;left:45px;top:300px;width:100px;height:100px;border:3px solid var(--bg);border-radius:50%;opacity:.85}
+.d4 .wm:after{content:"";position:absolute;left:10px;top:10px;right:10px;bottom:10px;border:2px dashed var(--bg);border-radius:50%}
+.d4 .body{padding-left:250px;align-items:flex-start;text-align:left}
+.d4 .ttl{font-weight:700;font-size:62px;text-transform:uppercase;letter-spacing:.02em}
+.d4 .nm{padding-left:0;font-weight:600;font-size:48px}
+/* d5 Header Band */
+.d5 .band{display:block;left:0;top:0;right:0;height:214px;background:var(--a)}
+.d5 .f1{display:block;left:14px;top:14px;right:14px;bottom:14px;border:1.5px solid var(--b)}
+.d5 .body{padding-top:36px}
+.d5 .org,.d5 .ttl,.d5 .sub{color:var(--bg)}
+.d5 .ttl{font-weight:700;font-size:70px}
+/* d6 Dotted Edge */
+.d6 .f1{display:block;left:28px;top:28px;right:28px;bottom:28px;border:6px dotted var(--a)}
+.d6 .f2{display:block;left:52px;top:52px;right:52px;bottom:52px;border:1px solid var(--b)}
+.d6 .ttl{font-size:74px}
+/* d7 Square Corners */
+.d7 .f1{display:block;left:30px;top:30px;right:30px;bottom:30px;border:2px solid var(--a)}
+.d7 .f2{display:block;left:50px;top:50px;right:50px;bottom:50px;border:1px solid var(--b)}
+.d7 .k{display:block;width:24px;height:24px;background:var(--a)}
+.d7 .k1{left:18px;top:18px}.d7 .k2{right:18px;top:18px}.d7 .k3{left:18px;bottom:18px}.d7 .k4{right:18px;bottom:18px}
+.d7 .ttl{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:64px}
+.d7 .nm{font-size:66px}
+/* d8 Quiet Minimal */
+.d8 .f1{display:block;left:40px;top:40px;right:40px;bottom:40px;border:1px solid var(--ink)}
+.d8 .ttl{font-weight:300;letter-spacing:.2em;text-transform:uppercase;font-size:62px;color:var(--ink)}
+.d8 .nm{font-weight:700;font-size:56px;border-bottom:1px solid var(--ink)}
+.d8 .sub{color:var(--a)}
+/* d9 Wide Frame */
+.d9 .f1{display:block;left:0;top:0;right:0;bottom:0;border:22px solid var(--a)}
+.d9 .f2{display:block;left:36px;top:36px;right:36px;bottom:36px;border:2px solid var(--b)}
+.d9 .ttl{font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:70px}
+.d9 .nm{font-weight:700;font-size:50px}
+/* d10 Corner Wedges */
+.d10 .k{display:block;width:0;height:0}
+.d10 .k1{left:0;top:0;border-top:160px solid var(--a);border-right:160px solid transparent}
+.d10 .k2{right:0;top:0;border-top:76px solid var(--b);border-left:76px solid transparent}
+.d10 .k3{right:0;bottom:0;border-bottom:160px solid var(--a);border-left:160px solid transparent}
+.d10 .k4{left:0;bottom:0;border-bottom:76px solid var(--b);border-right:76px solid transparent}
+.d10 .ttl{font-size:82px}
+.d10 .nm{font-weight:600;font-size:54px;letter-spacing:.04em}
+/* d11 Twin Stripes */
+.d11 .band{display:block;left:0;top:0;right:0;height:28px;background:var(--a)}
+.d11 .band2{display:block;left:0;bottom:0;right:0;height:28px;background:var(--a)}
+.d11 .f1{display:block;left:0;top:38px;right:0;height:4px;background:var(--b)}
+.d11 .f2{display:block;left:0;bottom:38px;right:0;height:4px;background:var(--b)}
+.d11 .ttl{font-weight:700;font-size:66px}
+/* d12 Seal Watermark */
+.d12 .f1{display:block;left:28px;top:28px;right:28px;bottom:28px;border:2px solid var(--a)}
+.d12 .wm{display:block;left:301px;top:137px;width:520px;height:520px;border:26px double var(--a);border-radius:50%;opacity:.12}
+.d12 .ttl{font-weight:700;font-size:86px}
+.d12 .nm{font-size:64px;font-weight:600}
+/* d13 Modern Bar */
+.d13 .f1{display:block;left:70px;top:70px;bottom:70px;width:8px;background:var(--a)}
+.d13 .band{display:block;right:0;top:0;width:260px;height:16px;background:var(--b)}
+.d13 .band2{display:block;left:0;bottom:0;width:260px;height:16px;background:var(--b)}
+.d13 .body{padding-left:128px;align-items:flex-start;text-align:left}
+.d13 .ttl{font-weight:700;font-size:64px;text-transform:uppercase;letter-spacing:-.01em}
+.d13 .nm{padding-left:0;font-weight:600;font-size:46px}
+/* d14 Rounded Frame */
+.d14 .f1{display:block;left:28px;top:28px;right:28px;bottom:28px;border:3px solid var(--a);border-radius:30px}
+.d14 .f2{display:block;left:46px;top:46px;right:46px;bottom:46px;border:1px dashed var(--b);border-radius:20px}
+.d14 .ttl{font-size:76px}
+/* d15 Ribbon Edge */
+.d15 .band{display:block;left:0;top:0;bottom:0;width:40px;background:linear-gradient(180deg,var(--a),var(--b))}
+.d15 .band2{display:block;right:0;top:0;bottom:0;width:40px;background:linear-gradient(0deg,var(--a),var(--b))}
+.d15 .f1{display:block;left:62px;top:28px;right:62px;bottom:28px;border:1px solid var(--b)}
+.d15 .ttl{font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:64px}
+.d15 .nm{font-weight:500;font-style:italic;font-size:58px}
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <svg class="spark a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+    <svg class="spark b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+    <svg class="spark c" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="3" y="8" width="58" height="42" rx="9" fill="var(--acc)"/>
+        <rect x="9" y="14" width="46" height="30" rx="5" fill="var(--surf)"/>
+        <rect x="15" y="21" width="24" height="4" rx="2" fill="var(--lav)"/>
+        <rect x="15" y="29" width="16" height="4" rx="2" fill="var(--lav)"/>
+        <path d="M40 46l-3 14 9-5 9 5-3-14z" fill="var(--acc2)"/>
+        <circle cx="46" cy="40" r="10" fill="#ffd45e"/>
+        <path d="M46 33.5l1.9 4.1 4.5.5-3.3 3 .9 4.4-4-2.2-4 2.2.9-4.4-3.3-3 4.5-.5z" fill="var(--acc)"/>
+      </svg>
+      <div>
+        <h1>Sanad Certificate Maker</h1>
+        <p>Fill in the details, pick one of 300 designs, and download a print-ready PNG or PDF. Every certificate gets its own number and a QR code with all the details inside.</p>
+      </div>
+    </div>
+    <ol class="steps" aria-label="Steps">
+      <li class="s1"><b>1</b>Add details</li>
+      <li class="s2"><b>2</b>Pick a style</li>
+      <li class="s3"><b>3</b>Download</li>
+    </ol>
+  </header>
+
+  <div class="grid">
+    <div class="col left">
+      <section class="card" aria-labelledby="h-details">
+        <h2 id="h-details"><span class="hl"><span class="num n1">1</span>Certificate details</span> <button class="btn" id="btn-clear" type="button">Clear form</button></h2>
+        <form id="form" autocomplete="off">
+          <fieldset>
+            <legend>Recipient</legend>
+            <div class="f"><label for="name">Awarded to (person or organization)</label><input id="name" maxlength="70" placeholder="Full name or organization"></div>
+            <div class="f"><label for="reason">Reason, course or event</label><textarea id="reason" maxlength="260" placeholder="for outstanding performance in..."></textarea></div>
+            <div class="row">
+              <div class="f"><label for="note">Extra note (grade, hours, rank)</label><input id="note" maxlength="50" placeholder="e.g. Grade A+ / 40 hours"></div>
+              <div class="f"><label for="date">Date</label><input id="date" type="date"></div>
+            </div>
+            <div class="f"><label for="place">Place</label><input id="place" maxlength="50" placeholder="City, country"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Certificate type</legend>
+            <div class="row">
+              <div class="f"><label for="type">Type</label><select id="type"></select></div>
+              <div class="f"><label for="sub">Subtitle line</label><input id="sub" maxlength="40"></div>
+            </div>
+            <div class="f"><label for="pre">Introduction line</label><input id="pre" maxlength="80"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Issued by</legend>
+            <div class="f"><label for="org">Organization name</label><input id="org" maxlength="60" placeholder="Organization or institute"></div>
+            <div class="row">
+              <div class="f"><label for="issuer">Signer name</label><input id="issuer" maxlength="40"></div>
+              <div class="f"><label for="role">Signer title</label><input id="role" maxlength="40"></div>
+              <div class="f"><label for="issuer2">Second signer (optional)</label><input id="issuer2" maxlength="40"></div>
+              <div class="f"><label for="role2">Second signer title</label><input id="role2" maxlength="40"></div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Seal (optional)</legend>
+            <div class="f"><label for="seal">Seal style</label><select id="seal"></select></div>
+            <div class="f" id="f-sealtxt" hidden><label for="sealtxt">Seal text</label><input id="sealtxt" maxlength="4" placeholder="e.g. BFA"><p class="hint">Leave empty to use the organization's initials.</p></div>
+          </fieldset>
+          <fieldset>
+            <legend>Unique certificate number</legend>
+            <div class="numrow">
+              <input id="number" maxlength="30" aria-label="Certificate number">
+              <button class="btn" id="btn-num" type="button">New number</button>
+            </div>
+            <p class="hint">A fresh number is made for you. Press the button for another one, or type your own.</p>
+          </fieldset>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="h-style">
+        <h2 id="h-style"><span class="hl"><span class="num n2">2</span>Choose a style</span> <small id="style-count"></small></h2>
+        <div class="filters">
+          <div class="f" style="margin:0"><label for="f-design">Layout</label><select id="f-design"></select></div>
+          <div class="f" style="margin:0"><label for="f-pal">Colors</label><select id="f-pal"></select></div>
+        </div>
+        <div class="gal" id="gal"></div>
+        <div class="pager">
+          <button class="btn" id="pg-prev" type="button">Previous</button>
+          <span id="pg-label"></span>
+          <button class="btn" id="pg-next" type="button">Next</button>
+        </div>
+        <div class="pager">
+          <button class="btn" id="btn-shuffle" type="button">Surprise me</button>
+          <span id="style-name"></span>
+        </div>
+      </section>
+    </div>
+
+    <div class="col right">
+      <section class="card sticky" aria-labelledby="h-prev">
+        <h2 id="h-prev"><span class="hl"><span class="num n3">3</span>Preview and download</span> <small id="style-no"></small></h2>
+        <div class="mat">
+          <div class="stage" id="stage" role="img" aria-label="Certificate preview"><div id="preview"></div></div>
+        </div>
+        <div class="meta"><span>Number <code id="meta-num"></code></span><span>A4 landscape, 2246 x 1588 px</span></div>
+        <div class="dl">
+          <button class="btn pri" id="dl-png" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Download image (PNG)</button>
+          <button class="btn pri2" id="dl-pdf" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Download PDF</button>
+        </div>
+        <details>
+          <summary>What the QR code contains</summary>
+          <pre class="qrtxt" id="qrtxt"></pre>
+        </details>
+      </section>
+    </div>
+  </div>
+  <footer class="sitefoot">Made for quick, tidy certificates. Every one gets its own number.</footer>
+</div>
+<div id="offscreen" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ---------- Style data: 15 layouts x 20 palettes = 300 styles ---------- */
+const DESIGNS = [
+  {n:'Classic Double',  fd:"'Playfair Display',serif",     fn:"'Great Vibes',cursive",         fb:"'Lora',serif"},
+  {n:'Corner Frame',    fd:"'Cinzel',serif",               fn:"'Cormorant Garamond',serif",    fb:"'Lora',serif"},
+  {n:'Heavy Border',    fd:"'Libre Baskerville',serif",    fn:"'Playfair Display',serif",      fb:"'Lora',serif"},
+  {n:'Side Band',       fd:"'Montserrat',sans-serif",      fn:"'Playfair Display',serif",      fb:"'Montserrat',sans-serif"},
+  {n:'Header Band',     fd:"'Playfair Display',serif",     fn:"'Dancing Script',cursive",      fb:"'Raleway',sans-serif"},
+  {n:'Dotted Edge',     fd:"'DM Serif Display',serif",     fn:"'Dancing Script',cursive",      fb:"'Lora',serif"},
+  {n:'Square Corners',  fd:"'Cinzel',serif",               fn:"'Great Vibes',cursive",         fb:"'Raleway',sans-serif"},
+  {n:'Quiet Minimal',   fd:"'Raleway',sans-serif",         fn:"'Cormorant Garamond',serif",    fb:"'Raleway',sans-serif"},
+  {n:'Wide Frame',      fd:"'Oswald',sans-serif",          fn:"'Playfair Display',serif",      fb:"'Raleway',sans-serif"},
+  {n:'Corner Wedges',   fd:"'Abril Fatface',serif",        fn:"'Josefin Sans',sans-serif",     fb:"'Josefin Sans',sans-serif"},
+  {n:'Twin Stripes',    fd:"'Merriweather',serif",         fn:"'Great Vibes',cursive",         fb:"'Merriweather',serif"},
+  {n:'Seal Watermark',  fd:"'Cormorant Garamond',serif",   fn:"'Dancing Script',cursive",      fb:"'Lora',serif"},
+  {n:'Modern Bar',      fd:"'Poppins',sans-serif",         fn:"'Poppins',sans-serif",          fb:"'Poppins',sans-serif"},
+  {n:'Rounded Frame',   fd:"'DM Serif Display',serif",     fn:"'Great Vibes',cursive",         fb:"'Raleway',sans-serif"},
+  {n:'Ribbon Edge',     fd:"'Josefin Sans',sans-serif",    fn:"'Playfair Display',serif",      fb:"'Josefin Sans',sans-serif"}
+];
+const PALETTES = [
+  {n:'Ivory Gold',     bg:'#fbf7ec', ink:'#2b2418', a:'#b8892b', b:'#7a5a14'},
+  {n:'Royal Navy',     bg:'#f7f8fb', ink:'#14213d', a:'#1d3a8a', b:'#c9a227'},
+  {n:'Emerald',        bg:'#f4faf6', ink:'#11302a', a:'#0f7b5f', b:'#c8a24a'},
+  {n:'Crimson',        bg:'#fdf6f4', ink:'#3a1214', a:'#a6192e', b:'#c89b3c'},
+  {n:'Slate Teal',     bg:'#f2f7f7', ink:'#12292e', a:'#15747e', b:'#e0914a'},
+  {n:'Plum',           bg:'#faf5fa', ink:'#2f1a3a', a:'#7b2d8e', b:'#d4a64a'},
+  {n:'Midnight Gold',  bg:'#12151f', ink:'#f1e9d2', a:'#d4af37', b:'#a58f3a'},
+  {n:'Charcoal Copper',bg:'#1b1b1d', ink:'#f2ece6', a:'#d98a58', b:'#a8704a'},
+  {n:'Forest Night',   bg:'#0f2a22', ink:'#eaf3ee', a:'#e0c36a', b:'#5fb08e'},
+  {n:'Burgundy Night', bg:'#2a0f16', ink:'#f8ebe9', a:'#e3b86a', b:'#c35d6e'},
+  {n:'Sky',            bg:'#f1f8fe', ink:'#0f2a44', a:'#1b7fc4', b:'#f2a33a'},
+  {n:'Coral',          bg:'#fff5f1', ink:'#3d1d17', a:'#e0583c', b:'#1f6f78'},
+  {n:'Sand',           bg:'#f6efe4', ink:'#3a2f20', a:'#9b6b3a', b:'#5f7a5a'},
+  {n:'Mono',           bg:'#ffffff', ink:'#111111', a:'#111111', b:'#777777'},
+  {n:'Rose',           bg:'#fff3f6', ink:'#3b1523', a:'#c2335f', b:'#b88a44'},
+  {n:'Olive',          bg:'#f6f6ea', ink:'#2c3016', a:'#6b7a1f', b:'#b5842f'},
+  {n:'Indigo Night',   bg:'#141436', ink:'#eceaff', a:'#a597ff', b:'#f0c36a'},
+  {n:'Amber',          bg:'#fffaf0', ink:'#33210a', a:'#e07b00', b:'#1b4965'},
+  {n:'Mint',           bg:'#effaf6', ink:'#0d3b33', a:'#1fa88a', b:'#3a5fa8'},
+  {n:'Steel',          bg:'#f3f4f6', ink:'#1f2937', a:'#475569', b:'#b45309'}
+];
+const TOTAL = DESIGNS.length * PALETTES.length; /* 300 */
+const styleOf = i => ({d: Math.floor(i / PALETTES.length), p: i % PALETTES.length});
+
+const TYPES = [
+  {k:'Achievement',   sub:'of Achievement',   pre:'This certificate is proudly presented to'},
+  {k:'Completion',    sub:'of Completion',    pre:'This is to certify that'},
+  {k:'Participation', sub:'of Participation', pre:'This certificate is awarded to'},
+  {k:'Appreciation',  sub:'of Appreciation',  pre:'In sincere appreciation, this certificate is presented to'},
+  {k:'Excellence',    sub:'of Excellence',    pre:'For demonstrating excellence, this certificate is presented to'},
+  {k:'Membership',    sub:'of Membership',    pre:'This is to certify that'},
+  {k:'Training',      sub:'of Training',      pre:'This is to certify that'},
+  {k:'Internship',    sub:'of Internship',    pre:'This is to certify that'},
+  {k:'Recognition',   sub:'of Recognition',   pre:'In recognition of outstanding contribution, presented to'},
+  {k:'Award',         sub:'of Award',         pre:'This award is proudly presented to'},
+  {k:'Custom',        sub:'',                 pre:'This certificate is presented to'}
+];
+
+/* ---------- Helpers ---------- */
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function mix(h1, h2, t){ /* blend two hex colors, t = share of h1 */
+  const p = h => [1,3,5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const a = p(h1), b = p(h2);
+  return '#' + a.map((v, i) => Math.round(v * t + b[i] * (1 - t)).toString(16).padStart(2, '0')).join('');
+}
+function fmtDate(v){
+  if(!v) return '';
+  const d = new Date(v + 'T00:00:00');
+  return isNaN(d) ? v : d.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+}
+const NUM_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; /* no 0/O/1/I */
+function makeNumber(){
+  const d = new Date(), yy = String(d.getFullYear()).slice(2), mm = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0');
+  const buf = new Uint32Array(6); crypto.getRandomValues(buf);
+  let s = ''; buf.forEach(n => s += NUM_CHARS[n % NUM_CHARS.length]);
+  return 'SND-' + yy + mm + dd + '-' + s;
+}
+
+/* ---------- Seals ---------- */
+const SEALS = [
+  {k:'none',     n:'No seal'},
+  {k:'star',     n:'Star and year'},
+  {k:'rosette',  n:'Rosette ribbon'},
+  {k:'laurel',   n:'Laurel wreath'},
+  {k:'verified', n:'Verified badge'},
+  {k:'shield',   n:'Shield crest'},
+  {k:'stamp',    n:'Stamp ring'}
+];
+function starPts(cx, cy, R, r){
+  const p = [];
+  for(let i = 0; i < 10; i++){
+    const a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r : R;
+    p.push((cx + rad * Math.cos(a)).toFixed(1) + ',' + (cy + rad * Math.sin(a)).toFixed(1));
+  }
+  return p.join(' ');
+}
+function orgInitials(o){
+  const skip = ['of','the','and','for','&'];
+  const w = String(o || '').split(/\s+/).filter(x => x && !skip.includes(x.toLowerCase()));
+  return w.slice(0, 3).map(x => x[0]).join('').toUpperCase();
+}
+function sealHTML(data, P, year){
+  const k = data.seal || 'none';
+  if(k === 'none') return '';
+  if(k === 'star') return `<div class="seal"><span>&#9733;<small>${esc(year)}</small></span></div>`;
+  const txt = ((data.sealtxt || '').trim().slice(0, 4).toUpperCase()) || orgInitials(data.org);
+  const fs = txt.length <= 1 ? 44 : txt.length === 2 ? 38 : txt.length === 3 ? 30 : 24;
+  const label = (color, size, t) => `<span style="color:${color};font-size:${size}px">${esc(t)}</span>`;
+  const fallbackStar = (R, r) => `<polygon points="${starPts(56, 56, R, r)}" fill="${P.bg}"/>`;
+  let inner = '', text = '';
+  if(k === 'rosette'){
+    let petals = '';
+    for(let i = 0; i < 12; i++){
+      const a = i * Math.PI / 6;
+      petals += `<circle cx="${(56 + 31 * Math.cos(a)).toFixed(1)}" cy="${(46 + 31 * Math.sin(a)).toFixed(1)}" r="8" fill="${P.a}"/>`;
+    }
+    inner = `<polygon points="40,66 30,108 42,100 52,108 53,70" fill="${P.b}"/><polygon points="72,66 82,108 70,100 60,108 59,70" fill="${P.b}"/>${petals}<circle cx="56" cy="46" r="31" fill="${P.a}"/><circle cx="56" cy="46" r="24" fill="none" stroke="${P.bg}" stroke-width="2"/><polygon points="${starPts(56, 46, 14, 6)}" fill="${P.bg}"/>`;
+  }else if(k === 'laurel'){
+    const pt = (deg, rad) => [56 + rad * Math.cos(deg * Math.PI / 180), 56 + rad * Math.sin(deg * Math.PI / 180)];
+    let leaves = '';
+    for(let i = 0; i < 8; i++){
+      const deg = 100 + i * 17, [x, y] = pt(deg, 41), rot = deg + 90 + (i % 2 ? 30 : -30);
+      leaves += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="11" ry="4.5" transform="rotate(${rot.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="${i % 2 ? P.b : P.a}"/>`;
+    }
+    const [x1, y1] = pt(95, 41), [x2, y2] = pt(222, 41);
+    const branch = `<path d="M${x1.toFixed(1)} ${y1.toFixed(1)}A41 41 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${P.a}" stroke-width="2"/>${leaves}`;
+    inner = `<g>${branch}</g><g transform="translate(112 0) scale(-1 1)">${branch}</g>`;
+    text = label(P.a, 22, year);
+  }else if(k === 'verified'){
+    let bumps = '';
+    for(let i = 0; i < 10; i++){
+      const a = i * Math.PI / 5;
+      bumps += `<circle cx="${(56 + 35 * Math.cos(a)).toFixed(1)}" cy="${(56 + 35 * Math.sin(a)).toFixed(1)}" r="14" fill="${P.a}"/>`;
+    }
+    inner = `${bumps}<circle cx="56" cy="56" r="36" fill="${P.a}"/><path d="M36 57l14 14 27-30" fill="none" stroke="${P.bg}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }else if(k === 'shield'){
+    const sh = 'M56 5L100 19V57C100 83 79 100 56 108C33 100 12 83 12 57V19Z';
+    inner = `<path d="${sh}" fill="${P.a}"/><path d="${sh}" transform="translate(56 56) scale(.85) translate(-56 -56)" fill="none" stroke="${P.bg}" stroke-width="2.5"/>` + (txt ? '' : fallbackStar(24, 10));
+    text = txt ? label(P.bg, fs, txt) : '';
+  }else if(k === 'stamp'){
+    let ticks = '';
+    for(let i = 0; i < 36; i++){
+      const a = i * Math.PI / 18, c = Math.cos(a), s = Math.sin(a);
+      ticks += `<line x1="${(56 + 45 * c).toFixed(1)}" y1="${(56 + 45 * s).toFixed(1)}" x2="${(56 + 51 * c).toFixed(1)}" y2="${(56 + 51 * s).toFixed(1)}" stroke="${P.a}" stroke-width="2.5" stroke-linecap="round"/>`;
+    }
+    inner = `${ticks}<circle cx="56" cy="56" r="40" fill="${P.a}"/><circle cx="56" cy="56" r="34" fill="none" stroke="${P.bg}" stroke-width="1.5" stroke-dasharray="3 3"/>` + (txt ? '' : fallbackStar(20, 8));
+    text = txt ? label(P.bg, Math.round(fs * .88), txt) : '';
+  }
+  return `<div class="sl"><svg viewBox="0 0 112 112" width="112" height="112" xmlns="http://www.w3.org/2000/svg">${inner}</svg>${text}</div>`;
+}
+
+/* ---------- Certificate HTML ---------- */
+function certHTML(data, styleIdx, qrUrl){
+  const {d, p} = styleOf(styleIdx), D = DESIGNS[d], P = PALETTES[p];
+  const soft = mix(P.ink, P.bg, .72);
+  const vars = `--bg:${P.bg};--ink:${P.ink};--a:${P.a};--b:${P.b};--soft:${soft};--fd:${D.fd};--fn:${D.fn};--fb:${D.fb}`;
+  const n = (data.name || 'Recipient Name').trim();
+  const nmSize = n.length > 44 ? 34 : n.length > 34 ? 40 : n.length > 26 ? 48 : null;
+  const year = (data.date || '').slice(0, 4) || String(new Date().getFullYear());
+  const sigCell = (nm, role) => nm || role
+    ? `<div class="cell"><div class="sig">${esc(nm)}</div><div class="line">${esc(nm || ' ')}<em>${esc(role)}</em></div></div>` : '';
+  const dateCell = `<div class="cell"><div class="dt">${esc(fmtDate(data.date))}</div><div class="line">Date${data.place ? '<em>' + esc(data.place) + '</em>' : ''}</div></div>`;
+  return `<div class="cert d${d + 1}" style="${vars}">
+    <i class="band"></i><i class="band2"></i><i class="f1"></i><i class="f2"></i><i class="wm"></i>
+    <i class="k k1"></i><i class="k k2"></i><i class="k k3"></i><i class="k k4"></i>
+    <div class="body">
+      <div class="org">${esc(data.org)}</div>
+      <div class="ttl">Certificate</div>
+      <div class="sub">${esc(data.sub)}</div>
+      <div class="mid">
+        <div class="pre">${esc(data.pre)}</div>
+        <div class="nm"${nmSize ? ` style="font-size:${nmSize}px"` : ''}>${esc(n)}</div>
+        <div class="rs">${esc(data.reason)}</div>
+        ${data.note ? `<div class="nt">${esc(data.note)}</div>` : ''}
+      </div>
+      <div class="foot">
+        ${dateCell}
+        ${sigCell(data.issuer, data.role)}
+        ${sealHTML(data, P, year)}
+        ${sigCell(data.issuer2, data.role2)}
+        <div class="qr"><img src="${qrUrl}" alt=""><small><b>CERTIFICATE NO.</b>${esc(data.number)}</small></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- QR text and image ---------- */
+function qrText(data){
+  const L = [];
+  const add = (k, v) => { if(v && String(v).trim()) L.push(k + ': ' + String(v).trim()); };
+  L.push('CERTIFICATE');
+  add('No', data.number);
+  add('Type', (data.sub ? 'Certificate ' + data.sub : 'Certificate'));
+  add('Awarded to', data.name);
+  add('For', data.reason);
+  add('Note', data.note);
+  add('Issued by', data.org);
+  add('Date', fmtDate(data.date));
+  add('Place', data.place);
+  add('Signed', [data.issuer, data.role].filter(Boolean).join(', '));
+  add('Co-signed', [data.issuer2, data.role2].filter(Boolean).join(', '));
+  return L.join('\n');
+}
+function qrDataUrl(text){
+  const tmp = document.createElement('div');
+  tmp.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(tmp);
+  try{
+    new QRCode(tmp, {text, width:320, height:320, correctLevel:QRCode.CorrectLevel.L});
+    const c = tmp.querySelector('canvas');
+    return c ? c.toDataURL('image/png') : '';
+  }catch(e){
+    return '';
+  }finally{
+    tmp.remove();
+  }
+}
+</script>
+<script>
+/* ---------- App ---------- */
+const $ = id => document.getElementById(id);
+const PAGE = 12;
+const state = {style: 0, page: 0, fd: 'all', fp: 'all'};
+state.style = 1 * PALETTES.length + 2; /* Corner Frame in Emerald as a starting point */
+let qr = {url:'', text:''};
+
+const FIELDS = ['name','reason','note','date','place','type','sub','pre','org','issuer','role','issuer2','role2','seal','sealtxt','number'];
+
+function setDefaults(){
+  const today = new Date();
+  const iso = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+  const v = {
+    name:'Rahim Uddin',
+    reason:'for outstanding performance and dedication throughout the Advanced Web Development program.',
+    note:'Grade A+', date:iso, place:'Dhaka, Bangladesh', type:'Completion',
+    org:'Bright Future Academy', issuer:'A. Karim', role:'Program Director', issuer2:'S. Rahman', role2:'Head of Training',
+    seal:'none', sealtxt:'',
+    number:makeNumber()
+  };
+  const t = TYPES.find(x => x.k === v.type);
+  v.sub = t.sub; v.pre = t.pre;
+  FIELDS.forEach(k => $(k).value = v[k]);
+}
+function readForm(){
+  const o = {};
+  FIELDS.forEach(k => o[k] = $(k).value);
+  return o;
+}
+
+function buildQR(data){
+  let text = qrText(data), url = qrDataUrl(text), guard = 0;
+  while(!url && guard++ < 8){
+    text = text.slice(0, Math.floor(text.length * .85)).trimEnd() + '...';
+    url = qrDataUrl(text);
+  }
+  return {url, text};
+}
+
+/* ---------- Rendering ---------- */
+function scalePreview(){
+  const st = $('stage'), c = st.querySelector('.cert');
+  if(c) c.style.transform = 'scale(' + (st.clientWidth / 1123) + ')';
+}
+function scaleThumbs(){
+  const first = $('gal').querySelector('.th');
+  if(!first) return;
+  const s = first.clientWidth / 1123;
+  $('gal').querySelectorAll('.cert').forEach(c => c.style.transform = 'scale(' + s + ')');
+}
+function renderPreview(){
+  const data = readForm();
+  $('f-sealtxt').hidden = !(data.seal === 'shield' || data.seal === 'stamp');
+  qr = buildQR(data);
+  $('preview').innerHTML = certHTML(data, state.style, qr.url);
+  scalePreview();
+  $('qrtxt').textContent = qr.text;
+  $('meta-num').textContent = data.number || '-';
+  const {d, p} = styleOf(state.style);
+  $('style-no').textContent = 'Style ' + (state.style + 1) + ' of ' + TOTAL;
+  $('style-name').textContent = DESIGNS[d].n + ' / ' + PALETTES[p].n;
+}
+function filtered(){
+  const out = [];
+  for(let i = 0; i < TOTAL; i++){
+    const {d, p} = styleOf(i);
+    if((state.fd === 'all' || +state.fd === d) && (state.fp === 'all' || +state.fp === p)) out.push(i);
+  }
+  return out;
+}
+function renderGallery(){
+  const list = filtered();
+  const pages = Math.max(1, Math.ceil(list.length / PAGE));
+  state.page = Math.min(state.page, pages - 1);
+  const slice = list.slice(state.page * PAGE, state.page * PAGE + PAGE);
+  const data = readForm();
+  $('gal').innerHTML = slice.map(i => {
+    const {d, p} = styleOf(i);
+    return `<button type="button" class="th" data-i="${i}" aria-pressed="${i === state.style}" aria-label="Style ${i + 1}: ${esc(DESIGNS[d].n)}, ${esc(PALETTES[p].n)}">${certHTML(data, i, qr.url)}<b>${i + 1}</b></button>`;
+  }).join('');
+  scaleThumbs();
+  $('pg-label').textContent = 'Page ' + (state.page + 1) + ' of ' + pages + ' (' + list.length + ' styles)';
+  $('pg-prev').disabled = state.page === 0;
+  $('pg-next').disabled = state.page >= pages - 1;
+  $('style-count').textContent = list.length + ' shown';
+}
+let galTimer = 0;
+function refresh(withGallery = true){
+  renderPreview();
+  if(withGallery){
+    clearTimeout(galTimer);
+    galTimer = setTimeout(renderGallery, 220);
+  }
+}
+
+/* ---------- Setup ---------- */
+function setupSelects(){
+  $('type').innerHTML = TYPES.map(t => `<option>${esc(t.k)}</option>`).join('');
+  $('seal').innerHTML = SEALS.map(s => `<option value="${s.k}">${esc(s.n)}</option>`).join('');
+  $('f-design').innerHTML = '<option value="all">All layouts (15)</option>' + DESIGNS.map((d, i) => `<option value="${i}">${i + 1}. ${esc(d.n)}</option>`).join('');
+  $('f-pal').innerHTML = '<option value="all">All colors (20)</option>' + PALETTES.map((p, i) => `<option value="${i}">${i + 1}. ${esc(p.n)}</option>`).join('');
+}
+function bind(){
+  FIELDS.forEach(k => $(k).addEventListener('input', () => refresh()));
+  $('type').addEventListener('change', () => {
+    const t = TYPES.find(x => x.k === $('type').value);
+    if(t && t.k !== 'Custom'){ $('sub').value = t.sub; $('pre').value = t.pre; }
+    refresh();
+  });
+  $('btn-num').addEventListener('click', () => { $('number').value = makeNumber(); refresh(); toast('New number: ' + $('number').value); });
+  $('btn-clear').addEventListener('click', () => {
+    ['name','reason','note','place','org','issuer','role','issuer2','role2'].forEach(k => $(k).value = '');
+    $('number').value = makeNumber();
+    refresh();
+    $('name').focus();
+  });
+  $('f-design').addEventListener('change', e => { state.fd = e.target.value; state.page = 0; renderGallery(); });
+  $('f-pal').addEventListener('change', e => { state.fp = e.target.value; state.page = 0; renderGallery(); });
+  $('pg-prev').addEventListener('click', () => { state.page--; renderGallery(); });
+  $('pg-next').addEventListener('click', () => { state.page++; renderGallery(); });
+  $('gal').addEventListener('click', e => {
+    const b = e.target.closest('.th');
+    if(!b) return;
+    state.style = +b.dataset.i;
+    renderPreview();
+    $('gal').querySelectorAll('.th').forEach(x => x.setAttribute('aria-pressed', String(+x.dataset.i === state.style)));
+  });
+  $('btn-shuffle').addEventListener('click', () => {
+    state.style = Math.floor(Math.random() * TOTAL);
+    state.fd = 'all'; state.fp = 'all';
+    $('f-design').value = 'all'; $('f-pal').value = 'all';
+    state.page = Math.floor(state.style / PAGE);
+    renderPreview(); renderGallery();
+  });
+  $('dl-png').addEventListener('click', () => exportFile('png'));
+  $('dl-pdf').addEventListener('click', () => exportFile('pdf'));
+  if(window.ResizeObserver){
+    new ResizeObserver(() => { scalePreview(); scaleThumbs(); }).observe($('stage'));
+    new ResizeObserver(scaleThumbs).observe($('gal'));
+  }else{
+    addEventListener('resize', () => { scalePreview(); scaleThumbs(); });
+  }
+}
+
+/* ---------- Toast ---------- */
+let toastTimer = 0;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+}
+
+/* ---------- Export ---------- */
+async function renderCanvas(scale){
+  const host = $('offscreen');
+  host.innerHTML = certHTML(readForm(), state.style, qr.url);
+  const el = host.firstElementChild;
+  el.style.transform = 'none';
+  try{ await document.fonts.ready; }catch(e){}
+  await new Promise(r => setTimeout(r, 200));
+  try{
+    return await html2canvas(el, {scale, backgroundColor:null, logging:false, useCORS:true, width:1123, height:794, windowWidth:1123, windowHeight:794});
+  }finally{
+    host.innerHTML = '';
+  }
+}
+function canvasBlob(canvas){
+  return new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('Image export failed')), 'image/png'));
+}
+async function saveFile(filename, blob){
+  let dl = null;
+  try{ dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; }catch(e){ dl = null; }
+  if(dl){
+    try{
+      await dl.save({filename, data: blob});
+      toast('Saved ' + filename);
+    }catch(e){
+      toast(e && e.code === 'declined' ? 'Download cancelled' : 'Could not save the file (' + ((e && (e.code || e.message)) || 'error') + ')');
+    }
+    return;
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast('Download started: ' + filename);
+}
+async function exportFile(kind){
+  const btn = $(kind === 'png' ? 'dl-png' : 'dl-pdf');
+  const label = btn.innerHTML;
+  btn.disabled = true; btn.textContent = 'Preparing...';
+  try{
+    if(!window.html2canvas) throw new Error('Export library did not load');
+    const num = ($('number').value || 'certificate').replace(/[^A-Za-z0-9_-]+/g, '-');
+    const canvas = await renderCanvas(2);
+    if(kind === 'png'){
+      await saveFile('certificate-' + num + '.png', await canvasBlob(canvas));
+    }else{
+      if(!window.jspdf) throw new Error('PDF library did not load');
+      const pdf = new window.jspdf.jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210, undefined, 'FAST');
+      await saveFile('certificate-' + num + '.pdf', pdf.output('blob'));
+    }
+  }catch(e){
+    toast('Export failed: ' + (e && e.message ? e.message : 'unknown error'));
+  }finally{
+    btn.disabled = false; btn.innerHTML = label;
+  }
+}
+
+/* ---------- Start ---------- */
+setupSelects();
+setDefaults();
+bind();
+state.page = Math.floor(state.style / PAGE);
+renderPreview();
+renderGallery();
+</script>
+
+</body></html>
